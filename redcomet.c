@@ -8,8 +8,12 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#define SCREEN_SIZE 4
-#define F_CPU 1000000
+#define SCREEN_SIZE 4		//Iloœæ segmentów LED
+#define F_CPU 8000000		//8 MHz
+#define SEGMENT_DDR DDRB	//Które piny s¹ do manipulowania segmentami
+#define SEGMENT_PORT PORTB	//Który port jest do manipulowania segmentami
+#define SELECT_DDR DDRC		//Które piny s¹ do wyboru segmentu
+#define SELECT_DDR PORTC	//Który port jest do wyboru segmentu
 
 volatile int screen[SCREEN_SIZE] = {0,0,0,0};
 volatile int digits[10] = {
@@ -26,16 +30,24 @@ volatile int digits[10] = {
 	};
 volatile int buffer[SCREEN_SIZE];
 
+/*
+*/
+	
+void clockprescale(void)
+{
+	CLKPR = 0b10000000;
+	CLKPR = 0b00000000;
+}
 
 int main(void)
 {
 	// Napis na segmencie
-	DDRB = 0xFF;	// Ca³y port D na output
-	PORTB = 0x00;	// Wszystkie piny na stan niski
+	SEGMENT_DDR = 0xFF;	// Ca³y port D na output
+	SEGMENT_PORT = 0x00;	// Wszystkie piny na stan niski
 	
 	// Wybór segmentu
-	DDRC = 0xFF;	// Ca³y port B na output
-	PORTC = 0x00;	// Wszystkie piny na stan niski
+	SELECT_DDR = 0xFF;	// Ca³y port B na output
+	SELECT_DDR = 0x00;	// Wszystkie piny na stan niski
 	
 	unsigned int i, j;
     while (1) 
